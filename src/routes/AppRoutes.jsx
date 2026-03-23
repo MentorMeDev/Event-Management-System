@@ -58,6 +58,7 @@
 
 
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import Home from "../pages/public/Home";
 import Login from "../pages/auth/Login";
 import Register from "../pages/auth/Register";
 import AdminDashboard from "../pages/admin/Dashboard";
@@ -81,7 +82,7 @@ function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Navigate to="/admin/dashboard" replace />} />
+        <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
@@ -100,7 +101,7 @@ function AppRoutes() {
         <Route path="/staff/tasks" element={<Tasks />} />
         <Route path="/staff/check-in" element={<CheckIn />} />
         <Route path="/staff/profile" element={<StaffProfile />} />
-        <Route path="*" element={<Navigate to="/admin/dashboard" replace />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );
