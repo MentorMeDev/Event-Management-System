@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { Download, FileText, TrendingUp, DollarSign, Users, CalendarDays } from "lucide-react";
 import AdminLayout from "../../components/layout/AdminLayout";
+import Modal from "../../components/ui/Modal";
 
 function Reports() {
   const reports = [
@@ -9,11 +11,29 @@ function Reports() {
     { title: "Growth Rate", value: "24.6%", icon: TrendingUp },
   ];
 
+  const generatedReports = [
+    "Revenue Summary",
+    "Attendance Report",
+    "Venue Usage Report",
+    "User Activity Report",
+  ];
+
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [previewTitle, setPreviewTitle] = useState("Revenue Summary");
+
+  const handleOpenPreview = (title) => {
+    setPreviewTitle(title);
+    setIsPreviewOpen(true);
+  };
+
   return (
     <AdminLayout title="Reports & Analytics">
       <div className="mx-auto max-w-7xl">
         <div className="mb-6 flex justify-end">
-          <button className="flex items-center gap-2 rounded-2xl bg-cyan-400/20 px-4 py-3 font-semibold text-cyan-300 hover:bg-cyan-400/30">
+          <button
+            onClick={() => handleOpenPreview("Full Report Export")}
+            className="flex items-center gap-2 rounded-2xl bg-cyan-400/20 px-4 py-3 font-semibold text-cyan-300 hover:bg-cyan-400/30"
+          >
             <Download className="h-4 w-4" />
             Export Report
           </button>
@@ -46,7 +66,7 @@ function Reports() {
             <h2 className="mb-6 text-2xl font-bold">Generated Reports</h2>
 
             <div className="space-y-4">
-              {["Revenue Summary", "Attendance Report", "Venue Usage Report", "User Activity Report"].map((report) => (
+              {generatedReports.map((report) => (
                 <div
                   key={report}
                   className="flex items-center justify-between rounded-2xl bg-white/10 p-4"
@@ -55,7 +75,10 @@ function Reports() {
                     <FileText className="h-5 w-5 text-cyan-300" />
                     <span>{report}</span>
                   </div>
-                  <button className="rounded-xl bg-white/10 px-3 py-2 text-sm hover:bg-white/15">
+                  <button
+                    onClick={() => handleOpenPreview(report)}
+                    className="rounded-xl bg-white/10 px-3 py-2 text-sm hover:bg-white/15"
+                  >
                     View
                   </button>
                 </div>
@@ -89,6 +112,50 @@ function Reports() {
           </div>
         </div>
       </div>
+
+      <Modal
+        isOpen={isPreviewOpen}
+        title={`Preview: ${previewTitle}`}
+        onClose={() => setIsPreviewOpen(false)}
+        footer={(
+          <>
+            <button
+              type="button"
+              onClick={() => setIsPreviewOpen(false)}
+              className="rounded-2xl bg-white/10 px-4 py-2 hover:bg-white/20"
+            >
+              Close
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsPreviewOpen(false)}
+              className="rounded-2xl bg-cyan-400/20 px-4 py-2 font-semibold text-cyan-300 hover:bg-cyan-400/30"
+            >
+              Export Now
+            </button>
+          </>
+        )}
+      >
+        <div className="space-y-4 text-sm text-slate-200">
+          <p className="text-slate-300">
+            Review this report before exporting.
+          </p>
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+            <p className="font-semibold text-white">{previewTitle}</p>
+            <p className="mt-2">Reporting period: March 2026</p>
+            <p className="mt-1">Prepared by: Admin Analytics Panel</p>
+            <p className="mt-1">Key summary: Revenue growth and attendance performance are stable.</p>
+          </div>
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+            <p className="font-semibold text-white">Highlights</p>
+            <ul className="mt-2 list-inside list-disc space-y-1">
+              <li>Revenue Target: 78%</li>
+              <li>Attendance Goal: 85%</li>
+              <li>Venue Utilization: 69%</li>
+            </ul>
+          </div>
+        </div>
+      </Modal>
     </AdminLayout>
   );
 }

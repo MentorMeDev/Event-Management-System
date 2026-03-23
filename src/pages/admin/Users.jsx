@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Search,
   Plus,
@@ -8,9 +9,10 @@ import {
   UserX,
 } from "lucide-react";
 import AdminLayout from "../../components/layout/AdminLayout";
+import Modal from "../../components/ui/Modal";
 
 function Users() {
-  const users = [
+  const initialUsers = [
     {
       id: 1,
       name: "Mary Wanjiku",
@@ -41,6 +43,42 @@ function Users() {
     },
   ];
 
+  const [users, setUsers] = useState(initialUsers);
+  const [isAddUserOpen, setIsAddUserOpen] = useState(false);
+  const [userForm, setUserForm] = useState({
+    name: "",
+    email: "",
+    role: "User",
+    status: "Active",
+  });
+
+  const handleOpenAddUser = () => {
+    setUserForm({
+      name: "",
+      email: "",
+      role: "User",
+      status: "Active",
+    });
+    setIsAddUserOpen(true);
+  };
+
+  const handleAddUser = (event) => {
+    event.preventDefault();
+
+    setUsers((prevUsers) => [
+      {
+        id: Date.now(),
+        name: userForm.name,
+        email: userForm.email,
+        role: userForm.role,
+        status: userForm.status,
+      },
+      ...prevUsers,
+    ]);
+
+    setIsAddUserOpen(false);
+  };
+
   return (
     <AdminLayout title="Manage Users">
       <div className="mx-auto max-w-7xl">
@@ -50,7 +88,10 @@ function Users() {
               <Filter className="h-4 w-4" />
               Filter
             </button>
-            <button className="flex items-center gap-2 rounded-2xl bg-cyan-400/20 px-4 py-3 font-semibold text-cyan-300 backdrop-blur-xl hover:bg-cyan-400/30">
+            <button
+              onClick={handleOpenAddUser}
+              className="flex items-center gap-2 rounded-2xl bg-cyan-400/20 px-4 py-3 font-semibold text-cyan-300 backdrop-blur-xl hover:bg-cyan-400/30"
+            >
               <Plus className="h-4 w-4" />
               Add User
             </button>
@@ -143,6 +184,56 @@ function Users() {
           </div>
         </div>
       </div>
+
+      <Modal isOpen={isAddUserOpen} title="Add User" onClose={() => setIsAddUserOpen(false)}>
+        <form onSubmit={handleAddUser} className="space-y-4">
+          <input
+            required
+            type="text"
+            placeholder="Full name"
+            value={userForm.name}
+            onChange={(event) => setUserForm((prev) => ({ ...prev, name: event.target.value }))}
+            className="w-full rounded-2xl border border-white/10 bg-white/10 px-4 py-3 outline-none"
+          />
+
+          <input
+            required
+            type="email"
+            placeholder="Email address"
+            value={userForm.email}
+            onChange={(event) => setUserForm((prev) => ({ ...prev, email: event.target.value }))}
+            className="w-full rounded-2xl border border-white/10 bg-white/10 px-4 py-3 outline-none"
+          />
+
+          <select
+            value={userForm.role}
+            onChange={(event) => setUserForm((prev) => ({ ...prev, role: event.target.value }))}
+            className="w-full rounded-2xl border border-white/10 bg-white/10 px-4 py-3 outline-none"
+          >
+            <option className="text-slate-900">Admin</option>
+            <option className="text-slate-900">Staff</option>
+            <option className="text-slate-900">User</option>
+          </select>
+
+          <select
+            value={userForm.status}
+            onChange={(event) => setUserForm((prev) => ({ ...prev, status: event.target.value }))}
+            className="w-full rounded-2xl border border-white/10 bg-white/10 px-4 py-3 outline-none"
+          >
+            <option className="text-slate-900">Active</option>
+            <option className="text-slate-900">Inactive</option>
+          </select>
+
+          <div className="flex justify-end gap-3">
+            <button type="button" onClick={() => setIsAddUserOpen(false)} className="rounded-2xl bg-white/10 px-4 py-2 hover:bg-white/20">
+              Cancel
+            </button>
+            <button type="submit" className="rounded-2xl bg-cyan-400/20 px-4 py-2 font-semibold text-cyan-300 hover:bg-cyan-400/30">
+              Add User
+            </button>
+          </div>
+        </form>
+      </Modal>
     </AdminLayout>
   );
 }

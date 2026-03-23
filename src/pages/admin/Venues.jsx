@@ -1,18 +1,59 @@
+import { useState } from "react";
 import { MapPin, Plus, Building2, Users, Search } from "lucide-react";
 import AdminLayout from "../../components/layout/AdminLayout";
+import Modal from "../../components/ui/Modal";
 
 function Venues() {
-  const venues = [
+  const initialVenues = [
     { id: 1, name: "KICC Main Hall", capacity: 1200, location: "Nairobi", status: "Available" },
     { id: 2, name: "Sarit Expo Center", capacity: 800, location: "Westlands", status: "Booked" },
     { id: 3, name: "Nairobi Convention Hub", capacity: 500, location: "Upper Hill", status: "Available" },
   ];
 
+  const [venues, setVenues] = useState(initialVenues);
+  const [isAddVenueOpen, setIsAddVenueOpen] = useState(false);
+  const [venueForm, setVenueForm] = useState({
+    name: "",
+    capacity: "",
+    location: "",
+    status: "Available",
+  });
+
+  const handleOpenAddVenue = () => {
+    setVenueForm({
+      name: "",
+      capacity: "",
+      location: "",
+      status: "Available",
+    });
+    setIsAddVenueOpen(true);
+  };
+
+  const handleAddVenue = (event) => {
+    event.preventDefault();
+
+    setVenues((prevVenues) => [
+      {
+        id: Date.now(),
+        name: venueForm.name,
+        capacity: Number(venueForm.capacity) || 0,
+        location: venueForm.location,
+        status: venueForm.status,
+      },
+      ...prevVenues,
+    ]);
+
+    setIsAddVenueOpen(false);
+  };
+
   return (
     <AdminLayout title="Manage Venues">
       <div className="mx-auto max-w-7xl">
         <div className="mb-6 flex justify-end">
-          <button className="flex items-center gap-2 rounded-2xl bg-cyan-400/20 px-4 py-3 font-semibold text-cyan-300 hover:bg-cyan-400/30">
+          <button
+            onClick={handleOpenAddVenue}
+            className="flex items-center gap-2 rounded-2xl bg-cyan-400/20 px-4 py-3 font-semibold text-cyan-300 hover:bg-cyan-400/30"
+          >
             <Plus className="h-4 w-4" />
             Add Venue
           </button>
@@ -73,6 +114,56 @@ function Venues() {
           ))}
         </div>
       </div>
+
+      <Modal isOpen={isAddVenueOpen} title="Add Venue" onClose={() => setIsAddVenueOpen(false)}>
+        <form onSubmit={handleAddVenue} className="space-y-4">
+          <input
+            required
+            type="text"
+            placeholder="Venue name"
+            value={venueForm.name}
+            onChange={(event) => setVenueForm((prev) => ({ ...prev, name: event.target.value }))}
+            className="w-full rounded-2xl border border-white/10 bg-white/10 px-4 py-3 outline-none"
+          />
+
+          <input
+            required
+            type="number"
+            min="0"
+            placeholder="Capacity"
+            value={venueForm.capacity}
+            onChange={(event) => setVenueForm((prev) => ({ ...prev, capacity: event.target.value }))}
+            className="w-full rounded-2xl border border-white/10 bg-white/10 px-4 py-3 outline-none"
+          />
+
+          <input
+            required
+            type="text"
+            placeholder="Location"
+            value={venueForm.location}
+            onChange={(event) => setVenueForm((prev) => ({ ...prev, location: event.target.value }))}
+            className="w-full rounded-2xl border border-white/10 bg-white/10 px-4 py-3 outline-none"
+          />
+
+          <select
+            value={venueForm.status}
+            onChange={(event) => setVenueForm((prev) => ({ ...prev, status: event.target.value }))}
+            className="w-full rounded-2xl border border-white/10 bg-white/10 px-4 py-3 outline-none"
+          >
+            <option className="text-slate-900">Available</option>
+            <option className="text-slate-900">Booked</option>
+          </select>
+
+          <div className="flex justify-end gap-3">
+            <button type="button" onClick={() => setIsAddVenueOpen(false)} className="rounded-2xl bg-white/10 px-4 py-2 hover:bg-white/20">
+              Cancel
+            </button>
+            <button type="submit" className="rounded-2xl bg-cyan-400/20 px-4 py-2 font-semibold text-cyan-300 hover:bg-cyan-400/30">
+              Add Venue
+            </button>
+          </div>
+        </form>
+      </Modal>
     </AdminLayout>
   );
 }
